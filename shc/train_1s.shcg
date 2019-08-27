@@ -44,8 +44,8 @@ set -o xtrace
 
 renice 10 $$ >&2
 
+cd ..
 source ../venv/bin/activate
-# source ~helcl/work/virtualenv/tensorflow-1.4-gpu/bin/activate
 
 python train.py --config config/ud/multilingual/udify_bert_finetune_multilingual_1s.json --name multilingual_1s
 

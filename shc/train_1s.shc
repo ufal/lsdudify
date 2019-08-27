@@ -4,9 +4,9 @@
 #
 # !!! Memory limit
 #$ -hard
-#$ -l mem_free=10g
-#$ -l act_mem_free=10g
-#$ -l h_vmem=10g
+#$ -l mem_free=20g
+#$ -l act_mem_free=20g
+#$ -l h_vmem=20g
 #
 # Run in this directory
 #$ -cwd
@@ -39,8 +39,9 @@ set -o xtrace
 
 renice 10 $$ >&2
 
+cd ..
 source ../venv/bin/activate
 
-python train.py --config config/ud/multilingual/udify_bert_finetune_multilingual_1s.json --name multilingual_1s
+python udify_kondratyuk_original/train.py --config config/ud/multilingual/cpu_udify_bert_finetune_multilingual_1s.json --name cpu_multilingual_1s
 
 
