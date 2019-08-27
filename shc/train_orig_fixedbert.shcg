@@ -47,7 +47,7 @@ renice 10 $$ >&2
 cd ..
 source ../venv/bin/activate
 
-python train.py --config config/ud/multilingual/udify_bert_finetune_multilingual_fixedbert.json --name multilingual_fixedbert
+python udify_kondratyuk_original/train.py --config config/ud/multilingual/udify_fixedbert_multilingual.json --name orig_multilingual_fixedbert
 
 
 

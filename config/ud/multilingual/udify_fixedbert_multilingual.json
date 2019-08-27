@@ -14,9 +14,9 @@
       }
     }
   },
-  "train_data_path": "data/ud/multilingual/train_1s.conllu",
-  "validation_data_path": "data/ud/multilingual/dev_1s.conllu",
-  "test_data_path": "data/ud/multilingual/test_1s.conllu",
+  "train_data_path": "data/ud/multilingual/train.conllu",
+  "validation_data_path": "data/ud/multilingual/dev.conllu",
+  "test_data_path": "data/ud/multilingual/test.conllu",
   "vocabulary": {
     "directory_path": "data/vocab/multilingual/vocabulary"
   },
@@ -36,7 +36,7 @@
         "bert": {
           "type": "udify-bert-pretrained",
           "pretrained_model": "bert-base-multilingual-cased",
-          "requires_grad": true,
+          "requires_grad": false,
           "dropout": 0.15,
           "layer_dropout": 0.1,
           "combine_layers": "all"
@@ -83,8 +83,7 @@
     "maximum_samples_per_batch": ["num_tokens", 32 * 100]
   },
   "trainer": {
-    "num_epochs": 10,
-    "cuda_device": -1,
+    "num_epochs": 80,
     "patience": 80,
     "num_serialized_models_to_keep": 10,
     "keep_serialized_model_every_num_seconds": 2 * 60 * 60,
