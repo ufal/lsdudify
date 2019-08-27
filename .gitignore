@@ -110,3 +110,8 @@ venv.bak/
 /logs/
 /tmp/
 notebooks/bertviz/
+
+# vim
+**/*.swp
+
+
