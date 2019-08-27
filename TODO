@@ -1,0 +1,23 @@
+
+data pro jindřicha na lang id a centroidy
+
+jazyk a jeho plaintext (UD jazyky)
+- asi jen UD texty
+- vyvážený, 1000 vět třeba
+- pro malý jazyky možná oversamplovat
+- bude to overfit pač to budenm učit na datech na kterejch to pak trénujem
+- ale asi to neva
+- asi klidně concat train dev text
+
+
+(alternativně: bible nebo jw300 (ale to nemá mrtvý jazyky)
+nebo wiki kde je, jw300 kde je, jinak bible....)
+
+
+
+experimenty
+- natrénoivat to standardně jen bez finetuningu berta (to by snad nemuselo běžet měsíc)
+(to je náš baseline a taky ho porovnáme s tim jeho fajn tunovanym)
+- až odladíme langid a centrody a td tak natrénoivat to s tim a porovnat
+
+

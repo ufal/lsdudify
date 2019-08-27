@@ -408,8 +408,17 @@ class BertEmbedder(TokenEmbedder):
     def get_output_dim(self) -> int:
         return self.output_dim
 
+    # jinak:
+    # tady natvrdo udělat lang id na vstup a vycentrovat
+
+
+    # tohle pak načtem v allennlp data s těma languaghema a zamebedujeme
     def forward(self,
+                # batch x sentlen indexy z bert vocabulary
                 input_ids: torch.LongTensor,
+                # language: str,
+                # odtud jdou data, mohly by jít i data o jazyce a centgroidu odtud
+                # naprasit dict s centroidama
                 offsets: torch.LongTensor = None,
                 token_type_ids: torch.LongTensor = None) -> torch.Tensor:
         """
@@ -471,10 +480,15 @@ class BertEmbedder(TokenEmbedder):
 
         # input_ids may have extra dimensions, so we reshape down to 2-d
         # before calling the BERT model and then reshape back at the end.
-        all_encoder_layers, _ = self.bert_model(input_ids=util.combine_initial_dims(input_ids),
+        all_encoder_layers, tohlebymelobejt_cls = self.bert_model(input_ids=util.combine_initial_dims(input_ids),
                                                 token_type_ids=util.combine_initial_dims(token_type_ids),
                                                 attention_mask=util.combine_initial_dims(input_mask))
         all_encoder_layers = torch.stack(all_encoder_layers)
+
+
+        # tady někde klasifikace CLS -> jazyk
+        # dict jazyk -> centroid x layers
+        # foreach layer: layer = layer - centroid
 
         if needs_split:
             # First, unpack the output embeddings into one long sequence again
