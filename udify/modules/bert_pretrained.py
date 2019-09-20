@@ -389,6 +389,8 @@ class BertEmbedder(TokenEmbedder):
                  start_tokens: int = 1,
                  end_tokens: int = 1,
                  layer_dropout: float = 0.0,
+                 lng_id_model: str = None,
+                 lng_id_centroids: str = None,
                  combine_layers: str = "mix") -> None:
         super().__init__()
         self.bert_model = bert_model
@@ -404,6 +406,18 @@ class BertEmbedder(TokenEmbedder):
                                                     dropout=layer_dropout)
         else:
             self._scalar_mix = None
+
+        self.lng_id = None
+        if lng_id_model is not None:
+            if lng_id_centroids is None:
+                raise ValueError(
+                    "Language centroids must be provided when using "
+                    "language id.")
+            self.lng_id = torch.load(lng_id_model)
+            for param in self.lng_id.parameters():
+                param.requires_grad = False
+            self.lng_id.eval()
+            self.lng_id_centroids = torch.load(lng_id_centroids)
 
     def get_output_dim(self) -> int:
         return self.output_dim
@@ -480,15 +494,17 @@ class BertEmbedder(TokenEmbedder):
 
         # input_ids may have extra dimensions, so we reshape down to 2-d
         # before calling the BERT model and then reshape back at the end.
-        all_encoder_layers, tohlebymelobejt_cls = self.bert_model(input_ids=util.combine_initial_dims(input_ids),
+        all_encoder_layers, cls_vector = self.bert_model(input_ids=util.combine_initial_dims(input_ids),
                                                 token_type_ids=util.combine_initial_dims(token_type_ids),
                                                 attention_mask=util.combine_initial_dims(input_mask))
         all_encoder_layers = torch.stack(all_encoder_layers)
 
-
-        # tady někde klasifikace CLS -> jazyk
-        # dict jazyk -> centroid x layers
-        # foreach layer: layer = layer - centroid
+        if self.lng_id is not None:
+            with torch.no_grad():
+                predicted_lng = self.lng_id(cls_vector).argmax(1)
+                pred_lng_centroids = self.lng_id_centroids[
+                    predicted_lng].transpose(1, 0).unsqueeze(2)
+                all_encoder_layers = all_encoder_layers - pred_lng_centroids
 
         if needs_split:
             # First, unpack the output embeddings into one long sequence again
@@ -560,6 +576,8 @@ class UdifyPretrainedBertEmbedder(BertEmbedder):
                  requires_grad: bool = False,
                  dropout: float = 0.1,
                  layer_dropout: float = 0.1,
+                 lng_id_model: str = None,
+                 lng_id_centroids: str = None,
                  combine_layers: str = "mix") -> None:
         model = BertModel.from_pretrained(pretrained_model)
 
@@ -568,7 +586,9 @@ class UdifyPretrainedBertEmbedder(BertEmbedder):
 
         super().__init__(bert_model=model,
                          layer_dropout=layer_dropout,
-                         combine_layers=combine_layers)
+                         combine_layers=combine_layers,
+                         lng_id_model=lng_id_model,
+                         lng_id_centroids=lng_id_centroids)
 
         self.model = model
         self.dropout = dropout
